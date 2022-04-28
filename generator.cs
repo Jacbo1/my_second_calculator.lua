@@ -1,6 +1,6 @@
 const string OUTPUT_PATH = "my_second_calculator.lua";
 
-Func<int, bool[]> Int2Bits6 = x =>
+bool[] Int2Bits6(int x)
 {
     byte[] bytes = BitConverter.GetBytes(x);
     bool[] bits = new bool[6];
