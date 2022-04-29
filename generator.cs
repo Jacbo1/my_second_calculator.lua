@@ -78,7 +78,7 @@ local bin2int = ";
 
 if operation == ""+"" then
 	-- Addition
-	-- Binary half adder
+	-- Binary full adder
 	local add = ");
     string branch(string binary)
     {
@@ -134,7 +134,7 @@ if operation == ""+"" then
     File.AppendAllText(OUTPUT_PATH, @"
 elseif operation == ""-"" then
 	-- Subtraction
-	-- Binary half subtractor
+	-- Binary full subtractor
 	local sub = ");
     string branch(string binary)
     {
