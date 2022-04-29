@@ -14,7 +14,7 @@ local bin2int = {[no] = {[no] = {[no] = {[no] = {[no] = {[no] = {[no] = {[no] = 
 
 if operation == "+" then
 	-- Addition
-	-- Binary half adder
+	-- Binary full adder
 	local add = {[no] = {[no] = {[no] = {no, no}, [yes] = {yes, no}}, [yes] = {[no] = {yes, no}, [yes] = {no, yes}}}, [yes] = {[no] = {[no] = {yes, no}, [yes] = {no, yes}}, [yes] = {[no] = {no, yes}, [yes] = {yes, yes}}}}
 
 	local aBin = int2bin[a]
@@ -31,7 +31,7 @@ if operation == "+" then
 	print(a .. " + " .. b .. " = " .. bin2int[no][no][no][no][no][pair6[2]][pair6[1]][pair5[1]][pair4[1]][pair3[1]][pair2[1]][pair1[1]])
 elseif operation == "-" then
 	-- Subtraction
-	-- Binary half subtractor
+	-- Binary full subtractor
 	local sub = {[no] = {[no] = {[no] = {no, no}, [yes] = {yes, yes}}, [yes] = {[no] = {yes, yes}, [yes] = {no, yes}}}, [yes] = {[no] = {[no] = {yes, no}, [yes] = {no, no}}, [yes] = {[no] = {no, no}, [yes] = {yes, yes}}}}
 
 	local aBin = int2bin[a]
