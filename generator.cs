@@ -71,15 +71,15 @@ local bin2int = ";
     File.AppendAllText(OUTPUT_PATH, branch(""));
 }
 
-// Addition
+// Binary full adder
 {
-    // Adder
     File.AppendAllText(OUTPUT_PATH, @"
 
-if operation == ""+"" then
-	-- Addition
-	-- Binary full adder
-	local add = ");
+local aBin = int2bin[a]
+local bBin = int2bin[b]
+
+--Binary full adder
+local add = ");
     string branch(string binary)
     {
         if (binary.Length >= 3)
@@ -98,15 +98,15 @@ if operation == ""+"" then
         }
     }
 
-    File.AppendAllText(OUTPUT_PATH, branch(""));
+    File.AppendAllText(OUTPUT_PATH, branch("") + "\n");
+}
 
-
+// Addition
+{
+    // Adder
     code = @"
-
-	local aBin = int2bin[a]
-	local bBin = int2bin[b]
-
-	-- Add
+if operation == ""+"" then
+	-- Addition
 	local pair1 = add[aBin[6]][bBin[6]][no]";
 
     for (int i = 2; i <= 6; i++)
@@ -157,9 +157,6 @@ elseif operation == ""-"" then
 
     code = @"
 
-	local aBin = int2bin[a]
-	local bBin = int2bin[b]
-
 	-- Subtract
 	local pair1 = sub[aBin[6]][bBin[6]][no]";
     for (int i = 2; i <= 6; i++)
@@ -209,85 +206,52 @@ elseif operation == ""-"" then
     File.AppendAllText(OUTPUT_PATH, @"
 elseif operation == ""*"" then
 	-- Multiplication
-	-- Binary 6 bit multiplier
-	local mult = ");
-
-    bool[] halfAdder(bool a, bool b, bool c)
-    {
-        bool out1 = (a ^ b) ^ c;
-        bool out2 = ((a ^ b) && c) || (a && b);
-        return new bool[] { out1, out2 };
-    }
-
-    string branch(string binary)
-    {
-        if (binary.Length >= 12)
-        {
-            bool[] a = new bool[6];
-            bool[] b = new bool[6];
-
-            for (int i = 0; i < 6; i++)
-            {
-                a[i] = binary[i] == '1';
-                b[i] = binary[i + 6] == '1';
-            }
-
-            bool[] result = new bool[12];
-
-            for (int i = 0; i < 6; i++)
-            {
-                result[11 - i] = a[5 - i] && b[^1];
-            }
-
-            bool[] added;
-            for (int i = 1; i < b.Length; i++)
-            {
-                bool carry = false;
-                for (int j = 0; j < a.Length; j++)
-                {
-                    bool temp = a[5 - j] && b[5 - i];
-                    added = halfAdder(result[11 - i - j], temp, carry);
-                    carry = added[1];
-                    result[11 - i - j] = added[0];
-                }
-                result[11 - a.Length - i] = carry;
-            }
-
-            string s = "{";
-            for (int i = 0; i < 12; i++)
-                s += (i == 0 ? "" : ", ") + (result[i] ? "yes" : "no");
-
-            return s + '}';
-        }
-        else
-        {
-            return "{[no] = " + branch(binary + '0') + ", [yes] = " + branch(binary + '1') + '}';
-        }
-    }
-
-    File.AppendAllText(OUTPUT_PATH, branch(""));
-
-    code = @"
-
-	local aBin = int2bin[a]
-	local bBin = int2bin[b]
+	-- Binary AND
+	local andGate = {[no] = {[no] = no, [yes] = no}, [yes] = {[no] = no, [yes] = yes}}
 
 	-- Multiply
-	local answer = mult";
-    for (int i = 1; i <= 6; i++)
-        code += $"[aBin[{i}]]";
-    for (int i = 1; i <= 6; i++)
-        code += $"[bBin[{i}]]";
+	local digit12 = andGate[aBin[6]][bBin[6]]
+
+	local temp1 = add[andGate[aBin[5]][bBin[6]]][andGate[aBin[6]][bBin[5]]][no]");
+    
+    for (int i = 5; i >= 1; i--)
+    {
+        code += $@"
+	local temp{7 - i} = add[" + (i == 1 ? "no" : $"andGate[aBin[{i - 1}]][bBin[6]]") + $"][andGate[aBin[{i}]][bBin[5]]][temp{6 - i}[2]]";
+    }
+
+    code += "\n\tlocal digit11 = temp1[1]\n";
+
+    for (int j = 4; j >= 1; j--)
+    {
+        for (int i = 6; i >= 1; i--)
+        {
+            code += $@"
+	temp{7 - i} = add[" + (i == 1 ? "temp6[2]" : $"temp{8 - i}[1]") + $"][andGate[aBin[{i}]][bBin[{j}]]][" + (i == 6 ? "no" : $"temp{6 - i}[2]") + "]";
+        }
+
+        code += $@"
+	local digit{6 + j} = temp1[1]
+";
+    }
+
+    for (int i = 2; i <= 6; i++)
+    {
+        code += $@"
+	local digit{8 - i} = temp{i}[1]";
+    }
 
     code += @"
+	local digit1 = temp6[2]
 
-	print(a .. "" * "" .. b .. "" = "" .. bin2int";
+	print(bin2int";
+
     for (int i = 1; i <= 12; i++)
-        code += $"[answer[{i}]]";
+    {
+        code += $"[digit{i}]";
+    }
 
-    code += ")";
-
-    File.AppendAllText(OUTPUT_PATH, code);
+    File.AppendAllText(OUTPUT_PATH, code + ")");
 }
 
 File.AppendAllText(OUTPUT_PATH, @"
